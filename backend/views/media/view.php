@@ -6,7 +6,7 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model common\models\Media */
 
-$this->title = $model->id;
+$this->title = $model->alt;
 $this->params['breadcrumbs'][] = ['label' => 'Media', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
@@ -25,7 +25,6 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= DetailView::widget([
             'model' => $model,
             'attributes' => [
-                'id',
                 'file_name',
                 'file_type',
                 'file_size',

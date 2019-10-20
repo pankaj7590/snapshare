@@ -21,8 +21,12 @@ $this->params['breadcrumbs'][] = $this->title;
 			'dataProvider' => $dataProvider,
 			'itemOptions' => ['class' => 'item col-md-2'],
 			'itemView' => function ($model, $key, $index, $widget) {
-				$coverImage = ($model->coverImage?$model->coverImage:Media::getDummyImage());
-				return Html::a('<img src="'.$coverImage.'" alt="User Image" class="img-responsive">'.
+				if($model->coverImage){
+					$coverImage = Yii::$app->urlManager->baseUrl.'/uploads/'.$model->coverImage->file_name;
+				}else{
+					$coverImage = Media::getDummyImage();
+				}
+				return Html::a('<img src="'.$coverImage.'" alt="'.$model->name.'" class="img-responsive">'.
 						Html::encode($model->name)
 						.'<span class="users-list-date text-center">'.date('d M, Y').'</span>', Yii::$app->urlManager->createAbsoluteUrl(['album/view', 'slug' => $model->slug]), ['class' => 'users-list-name']);
 			},

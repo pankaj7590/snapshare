@@ -46,13 +46,13 @@ class MediaController extends Controller
 
     /**
      * Displays a single Media model.
-     * @param integer $id
+     * @param string $slug
      * @return mixed
      */
-    public function actionView($id)
+    public function actionView($slug)
     {
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model' => $this->findModel($slug),
         ]);
     }
 
@@ -109,13 +109,13 @@ class MediaController extends Controller
     /**
      * Finds the Media model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param integer $id
+     * @param string $slug
      * @return Media the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id)
+    protected function findModel($slug)
     {
-        if (($model = Media::findOne($id)) !== null) {
+        if (($model = Media::findOne(['slug' => $slug])) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');

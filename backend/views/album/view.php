@@ -14,7 +14,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="album-view box box-primary">
     <div class="box-header">
         <?= Html::a('Update', ['update', 'slug' => $model->slug], ['class' => 'btn btn-primary btn-flat']) ?>
-        <?= Html::a('Media', ['media/index', 'slug' => $model->slug], ['class' => 'btn btn-success btn-flat']) ?>
+        <?= Html::a('Media', ['media', 'slug' => $model->slug], ['class' => 'btn btn-success btn-flat']) ?>
         <?= Html::a('Delete', ['delete', 'slug' => $model->slug], [
             'class' => 'btn btn-danger btn-flat pull-right',
             'data' => [

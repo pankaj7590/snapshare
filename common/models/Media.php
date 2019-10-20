@@ -6,6 +6,7 @@ use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\behaviors\SluggableBehavior;
 use yii\behaviors\BlameableBehavior;
+use common\models\enums\MediaTypes;
 
 /**
  * This is the model class for table "media".
@@ -17,7 +18,6 @@ use yii\behaviors\BlameableBehavior;
  * @property int $file_size
  * @property string $alt
  * @property string $slug
- * @property int $is_cover
  * @property int $link_shared
  * @property int $status
  * @property int $created_by
@@ -30,7 +30,7 @@ use yii\behaviors\BlameableBehavior;
  * @property Shared[] $shareds
  */
 class Media extends \yii\db\ActiveRecord
-{
+{	
     const STATUS_DELETED = 0;
     const STATUS_INACTIVE = 9;
     const STATUS_ACTIVE = 10;
@@ -59,7 +59,7 @@ class Media extends \yii\db\ActiveRecord
             BlameableBehavior::className(),
 			[
                 'class' => SluggableBehavior::className(),
-                'attribute' => 'name',
+                'attribute' => 'alt',
                 'slugAttribute' => 'slug',
             ],
         ];
@@ -72,7 +72,7 @@ class Media extends \yii\db\ActiveRecord
     {
         return [
             [['file_name', 'file_type', 'file_size', 'alt', 'slug'], 'required'],
-            [['file_size', 'is_cover', 'link_shared', 'status', 'created_by', 'updated_by', 'created_at', 'updated_at'], 'integer'],
+            [['file_size', 'link_shared', 'status', 'created_by', 'updated_by', 'created_at', 'updated_at'], 'integer'],
             [['file_name', 'file_type', 'alt', 'slug'], 'string', 'max' => 255],
             [['album_id'], 'exist', 'skipOnError' => true, 'targetClass' => Album::className(), 'targetAttribute' => ['album_id' => 'id']],
             [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['created_by' => 'id']],
@@ -95,7 +95,6 @@ class Media extends \yii\db\ActiveRecord
             'file_size' => 'File Size',
             'alt' => 'Alt',
             'slug' => 'Slug',
-            'is_cover' => 'Is Cover',
             'link_shared' => 'Link Shared',
             'status' => 'Status',
             'created_by' => 'Created By',
@@ -139,5 +138,21 @@ class Media extends \yii\db\ActiveRecord
 	
 	public function getDummyImage(){
 		return Yii::$app->urlManager->baseUrl.'/images/'.Yii::$app->params['dummyImage'];
+	}
+	
+	public function isImage(){
+		return (in_array($this->file_type, MediaTypes::$fileTypes[MediaTypes::IMAGE]));
+	}
+	
+	public function getAlbumCover(){
+		return $this->hasOne(Album::className(), ['cover_image_id' => 'id']);
+	}
+	
+	public function getFileSize(){
+		//from https://subinsb.com/convert-bytes-kb-mb-gb-php/
+		$base = log($this->file_size) / log(1024);
+		$suffix = array("", "KB", "MB", "GB", "TB");
+		$f_base = floor($base);
+		return round(pow(1024, $base - floor($base)), 1) . $suffix[$f_base];
 	}
 }

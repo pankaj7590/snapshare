@@ -6,11 +6,15 @@ use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\behaviors\SluggableBehavior;
 use yii\behaviors\BlameableBehavior;
+use yii\web\UploadedFile;
+use common\models\enums\MediaTypes;
+use backend\components\MediaUploader;
 
 /**
  * This is the model class for table "album".
  *
  * @property int $id
+ * @property int $cover_image_id
  * @property string $name
  * @property string $slug
  * @property int $is_link_shared
@@ -26,6 +30,8 @@ use yii\behaviors\BlameableBehavior;
  */
 class Album extends \yii\db\ActiveRecord
 {
+	public $temp_files;
+	
     const STATUS_DELETED = 0;
     const STATUS_INACTIVE = 9;
     const STATUS_ACTIVE = 10;
@@ -69,10 +75,12 @@ class Album extends \yii\db\ActiveRecord
             [['name', 'slug'], 'required'],
             [['is_link_shared', 'status', 'created_by', 'updated_by', 'created_at', 'updated_at'], 'integer'],
             [['name', 'slug'], 'string', 'max' => 255],
+            [['cover_image_id'], 'exist', 'skipOnError' => true, 'targetClass' => Media::className(), 'targetAttribute' => ['cover_image_id' => 'id']],
             [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['created_by' => 'id']],
             [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['updated_by' => 'id']],
             ['status', 'default', 'value' => self::STATUS_INACTIVE],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_INACTIVE, self::STATUS_DELETED]],
+			[['temp_files'], 'safe'],
         ];
     }
 
@@ -83,6 +91,7 @@ class Album extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
+            'cover_image_id' => 'Cover Image',
             'name' => 'Name',
             'slug' => 'Slug',
             'is_link_shared' => 'Is Link Shared?',
@@ -91,6 +100,7 @@ class Album extends \yii\db\ActiveRecord
             'updated_by' => 'Updated By',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
+            'temp_files' => 'Files',
         ];
     }
 
@@ -123,6 +133,21 @@ class Album extends \yii\db\ActiveRecord
      */
     public function getCoverImage()
     {
-        return $this->hasMany(Media::className(), ['album_id' => 'id'])->andWhere(['is_cover' => true]);
+        return $this->hasOne(Media::className(), ['id' => 'cover_image_id']);
+    }
+	
+	public function upload(){
+		$temp_files = UploadedFile::getInstances($this, 'temp_files');
+		if($temp_files){
+			foreach($temp_files as $temp_file){
+				if ($temp_file != null && !$temp_file->getHasError()) {
+					$media_id = MediaUploader::MediaUpload($temp_file, $this->id);
+					if ($media_id === false) {
+						return false;
+					}
+				}
+			}
+		}
+		return true;
     }
 }

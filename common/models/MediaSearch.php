@@ -18,7 +18,7 @@ class MediaSearch extends Media
     public function rules()
     {
         return [
-            [['id', 'file_size', 'is_cover', 'link_shared', 'status', 'created_by', 'updated_by', 'created_at', 'updated_at'], 'integer'],
+            [['id', 'file_size', 'link_shared', 'status', 'created_by', 'updated_by', 'created_at', 'updated_at'], 'integer'],
             [['file_name', 'file_type', 'alt', 'slug'], 'safe'],
         ];
     }
@@ -62,7 +62,6 @@ class MediaSearch extends Media
         $query->andFilterWhere([
             'id' => $this->id,
             'file_size' => $this->file_size,
-            'is_cover' => $this->is_cover,
             'link_shared' => $this->link_shared,
             'status' => $this->status,
             'created_by' => $this->created_by,

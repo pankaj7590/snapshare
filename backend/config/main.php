@@ -44,8 +44,8 @@ return [
             'rules' => [
 				'albums' => 'album/index',
 				'users' => 'user/index',
-				'media/<slug:[a-zA-Z0-9_ -]+>' => 'media/index',
-				'album/<action>/<slug:[a-zA-Z0-9_ -]+>' => 'album/<action>',
+				'<slug:[a-zA-Z0-9_ -]+>/media/<action>' => 'media/<action>',
+				'<slug:[a-zA-Z0-9_ -]+>/album/<action>' => 'album/<action>',
             ],
         ],
         'urlManagerFrontend' => [
