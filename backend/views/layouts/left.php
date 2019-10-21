@@ -8,7 +8,8 @@
                 'items' => [
                     ['label' => 'Member since '.date('M. Y', Yii::$app->user->identity->created_at), 'options' => ['class' => 'header']],
                     ['label' => 'Users', 'icon' => 'users', 'url' => ['user/index']],
-                    ['label' => 'Albums', 'icon' => 'camera', 'url' => ['album/index']],
+                    ['label' => 'My Albums', 'icon' => 'camera', 'url' => ['album/index']],
+                    ['label' => 'Shared With Me', 'icon' => 'camera', 'url' => ['album/shared']],
                     [
                         'label' => 'User Management',
                         'icon' => 'cogs',

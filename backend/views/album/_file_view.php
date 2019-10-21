@@ -12,8 +12,8 @@ if($model->isImage()){
 	<div class="file-image-container">
 		<img src="<?= $preview?>" alt="<?= $model->alt?>" title="<?= $model->alt?>" class="img-responsive">
 	</div>
-	<span class="file-name"><?= Html::encode($model->alt)?></span>
-	<span class="users-list-date">Uploaded on <?= date('d M, Y', $model->created_at)?></span>
+	<span class="file-name" title="<?= Html::encode($model->alt)?>"><?= Html::encode($model->alt)?></span>
+	<span class="users-list-date">On <?= date('d M, Y', $model->created_at)?></span>
 	<span class="users-list-date">Size: <?= $model->fileSize?></span>
 	<div class="action-buttons">
 		<?php if($model->isImage()){?>

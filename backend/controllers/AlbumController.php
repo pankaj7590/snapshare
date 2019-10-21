@@ -53,8 +53,16 @@ class AlbumController extends Controller
      */
     public function actionView($slug)
     {
+		$model = $this->findModel($slug);
+		
+        $searchModel = new MediaSearch();
+		$searchModel->album_id = $model->id;
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+		
         return $this->render('view', [
-            'model' => $this->findModel($slug),
+            'model' => $model,
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
         ]);
     }
 

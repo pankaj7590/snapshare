@@ -16,7 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="box-header with-border">
         <?= Html::a('Create Album', ['create'], ['class' => 'btn btn-success btn-flat']) ?>
     </div>
-    <div class="box-body table-responsive no-padding">
+    <div class="box-body table-responsive">
 		<?= ListView::widget([
 			'dataProvider' => $dataProvider,
 			'itemOptions' => ['class' => 'item col-md-2'],
@@ -26,11 +26,33 @@ $this->params['breadcrumbs'][] = $this->title;
 				}else{
 					$coverImage = Media::getDummyImage();
 				}
-				return Html::a('<img src="'.$coverImage.'" alt="'.$model->name.'" class="img-responsive">'.
-						Html::encode($model->name)
-						.'<span class="users-list-date text-center">'.date('d M, Y').'</span>', Yii::$app->urlManager->createAbsoluteUrl(['album/view', 'slug' => $model->slug]), ['class' => 'users-list-name']);
+				return Html::a($this->render('_album_view', ['model' => $model]), Yii::$app->urlManager->createAbsoluteUrl(['album/view', 'slug' => $model->slug]), ['class' => 'users-list-name']);
 			},
 		]) ?>
     </div>
     <?php Pjax::end(); ?>
 </div>
+<?php
+$this->registerCss("
+.file-image-container{
+	height:150px;
+	overflow:hidden;
+}
+.file-container{
+    margin-bottom: 20px;
+    border: 2px solid #000;
+    border-radius: 10px;
+    padding: 10px;
+}
+span.file-name {
+    display: block;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+.action-buttons{
+	border-top:1px solid #000;
+	margin-top:5px;
+	padding-top:5px;
+}
+");
+?>

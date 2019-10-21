@@ -7,6 +7,7 @@ use yii\behaviors\TimestampBehavior;
 use yii\behaviors\SluggableBehavior;
 use yii\behaviors\BlameableBehavior;
 use common\models\enums\MediaTypes;
+use common\components\GeneralHelper;
 
 /**
  * This is the model class for table "media".
@@ -149,10 +150,6 @@ class Media extends \yii\db\ActiveRecord
 	}
 	
 	public function getFileSize(){
-		//from https://subinsb.com/convert-bytes-kb-mb-gb-php/
-		$base = log($this->file_size) / log(1024);
-		$suffix = array("", "KB", "MB", "GB", "TB");
-		$f_base = floor($base);
-		return round(pow(1024, $base - floor($base)), 1) . $suffix[$f_base];
+		return GeneralHelper::formatSize($this->file_size);
 	}
 }

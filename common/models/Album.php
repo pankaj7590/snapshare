@@ -9,6 +9,7 @@ use yii\behaviors\BlameableBehavior;
 use yii\web\UploadedFile;
 use common\models\enums\MediaTypes;
 use backend\components\MediaUploader;
+use common\components\GeneralHelper;
 
 /**
  * This is the model class for table "album".
@@ -150,4 +151,16 @@ class Album extends \yii\db\ActiveRecord
 		}
 		return true;
     }
+	
+	public function getMedia(){
+		return $this->hasMany(Media::className(), ['album_id' => 'id']);
+	}
+	
+	public function getAlbumSize(){
+		$size = 0;
+		foreach($this->media as $file){
+			$size += $file->file_size;
+		}
+		return GeneralHelper::formatSize($size);
+	}
 }

@@ -17,7 +17,7 @@ use common\models\Album;
 		
         <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
-        <?= $form->field($model, 'link_shared')->checkbox() ?>
+        <?= $form->field($model, 'is_link_shared')->checkbox() ?>
 
         <?= $form->field($model, 'status')->dropdownlist(Album::$statuses) ?>
 

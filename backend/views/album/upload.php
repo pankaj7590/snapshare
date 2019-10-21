@@ -2,7 +2,7 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
-
+use kartik\file\FileInput;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\Media */
@@ -18,7 +18,9 @@ $this->params['breadcrumbs'][] = $this->title;
 		<?php $form = ActiveForm::begin(); ?>
 		<div class="box-body table-responsive">
 
-			<?= $form->field($model, 'temp_files[]')->fileInput(['multiple' => true]) ?>
+			<?= $form->field($model, 'temp_files[]')->widget(FileInput::classname(), [
+				'options' => ['multiple' => 'true'],
+			]);?>
 
 		</div>
 		<div class="box-footer">
