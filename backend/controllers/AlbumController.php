@@ -7,6 +7,7 @@ use common\models\Album;
 use common\models\Media;
 use common\models\AlbumSearch;
 use common\models\MediaSearch;
+use common\models\UserContactSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -165,6 +166,20 @@ class AlbumController extends Controller
 			}
 		}
 		return $this->redirect(['media', 'slug' => $album]);
+	}
+	
+	public function actionShare($slug){
+		$model = $this->findModel($slug);
+		
+		$searchModel = new UserContactSearch();
+		$searchModel->user_id = Yii::$app->user->id;
+		$dataProvider = $searchModel->search([]);
+		
+		return $this->render('share', [
+			'model' => $model,
+			'dataProvider' => $dataProvider,
+			'searchModel' => $searchModel,
+		]);
 	}
 
     /**

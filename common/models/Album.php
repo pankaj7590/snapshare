@@ -31,7 +31,7 @@ use common\components\GeneralHelper;
  */
 class Album extends \yii\db\ActiveRecord
 {
-	public $temp_files;
+	public $temp_files, $temp_emails;
 	
     const STATUS_DELETED = 0;
     const STATUS_INACTIVE = 9;
@@ -81,7 +81,7 @@ class Album extends \yii\db\ActiveRecord
             [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['updated_by' => 'id']],
             ['status', 'default', 'value' => self::STATUS_INACTIVE],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_INACTIVE, self::STATUS_DELETED]],
-			[['temp_files'], 'safe'],
+			[['temp_files', 'temp_emails'], 'safe'],
         ];
     }
 
