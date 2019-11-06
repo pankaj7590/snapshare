@@ -3,6 +3,7 @@
 namespace common\models;
 
 use Yii;
+use yii\behaviors\TimestampBehavior;
 
 /**
  * This is the model class for table "invitation".
@@ -35,11 +36,22 @@ class Invitation extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['user_invitation_id', 'created_at', 'updated_at'], 'required'],
+            [['user_invitation_id'], 'required'],
             [['user_invitation_id', 'album_id', 'media_id', 'status', 'created_at', 'updated_at'], 'integer'],
             [['album_id'], 'exist', 'skipOnError' => true, 'targetClass' => Album::className(), 'targetAttribute' => ['album_id' => 'id']],
             [['media_id'], 'exist', 'skipOnError' => true, 'targetClass' => Media::className(), 'targetAttribute' => ['media_id' => 'id']],
             [['user_invitation_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserInvitation::className(), 'targetAttribute' => ['user_invitation_id' => 'id']],
+			[['user_invitation_id', 'album_id'], 'unique', 'targetAttribute' => ['user_invitation_id', 'album_id']],
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function behaviors()
+    {
+        return [
+            TimestampBehavior::className(),
         ];
     }
 
@@ -82,4 +94,26 @@ class Invitation extends \yii\db\ActiveRecord
     {
         return $this->hasOne(UserInvitation::className(), ['id' => 'user_invitation_id']);
     }
+	
+	public function afterSave($insert, $changedAttributes){
+		parent::afterSave($insert, $changedAttributes);
+		
+		if($insert){
+			$email = $this->userInvitation->email;
+			$senderEmail = $this->userInvitation->user->email;
+			$senderName = $this->userInvitation->user->username;
+			$subject = "Album Shared on SnapShare";
+			Yii::$app->mailer
+				->compose(
+					['html' => 'invitationEmail-html', 'text' => 'invitationEmail-text'],
+					['model' => $this]
+				)
+				->setFrom([$senderEmail => $senderName])
+				->setReplyTo([$senderEmail => $senderName])
+				->setTo($email)
+				->setSubject($subject)
+				->send();
+		}
+		return;
+	}
 }

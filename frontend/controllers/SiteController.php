@@ -6,6 +6,7 @@ use frontend\models\VerifyEmailForm;
 use Yii;
 use yii\base\InvalidArgumentException;
 use yii\web\BadRequestHttpException;
+use yii\web\NotFoundHttpException;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
@@ -14,6 +15,7 @@ use frontend\models\PasswordResetRequestForm;
 use frontend\models\ResetPasswordForm;
 use frontend\models\SignupForm;
 use frontend\models\ContactForm;
+use common\models\UserInvitation;
 
 /**
  * Site controller
@@ -150,9 +152,15 @@ class SiteController extends Controller
      *
      * @return mixed
      */
-    public function actionSignup()
+    public function actionSignup($token=null)
     {
+		$userInvitationModel = null;
+		if($token){
+			$userInvitationModel = $this->findUserInvitation($token);
+		}
+		
         $model = new SignupForm();
+		$model->invitation_token = $token;
         if ($model->load(Yii::$app->request->post()) && $model->signup()) {
             Yii::$app->session->setFlash('success', 'Thank you for registration. Please check your inbox for verification email.');
             return $this->goHome();
@@ -160,6 +168,7 @@ class SiteController extends Controller
 
         return $this->render('signup', [
             'model' => $model,
+            'userInvitationModel' => $userInvitationModel,
         ]);
     }
 
@@ -257,4 +266,14 @@ class SiteController extends Controller
             'model' => $model
         ]);
     }
+	
+	/*
+	* Find UserInvitation model from token
+	*/
+	private function findUserInvitation($token){
+		if(($model = UserInvitation::findOne(['invitation_token' => $token])) !== null){
+			return $model;
+		}
+		throw new NotFoundHttpException('Invited user not found. Invalid token.');
+	}
 }

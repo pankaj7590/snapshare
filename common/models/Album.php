@@ -163,4 +163,33 @@ class Album extends \yii\db\ActiveRecord
 		}
 		return GeneralHelper::formatSize($size);
 	}
+	
+	public function share(){
+		if($this->temp_emails){
+			// echo "<pre>";print_r($this->temp_emails);exit;
+			foreach($this->temp_emails as $temp_email){
+				//$temp_email may contain id of existing user contact or an email id of new user being invited on the platform
+				$userContact = UserContact::findOne($temp_email);
+				if($userContact !== null){
+					//if user already exists, share the album with the user
+					$shared = new Shared();
+					$shared->shared_with = $userContact->user_id;
+					$shared->album_id = $this->id;
+					$shared->save();
+				}else{
+					$userInvitation = UserInvitation::findOne(['email' => $temp_email]);
+					if(!$userInvitation){
+						//if user invitation does not exists then send an invitation to the user
+						$userInvitation = new UserInvitation();
+						$userInvitation->user_id = Yii::$app->user->id;
+						$userInvitation->email = $temp_email;
+						$userInvitation->invitation_token = Yii::$app->security->generateRandomString();
+					}
+					$userInvitation->temp_album_id = $this->id;
+					$userInvitation->save();
+				}
+			}
+		}
+		return true;
+	}
 }

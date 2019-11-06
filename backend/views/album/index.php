@@ -19,13 +19,8 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="box-body table-responsive">
 		<?= ListView::widget([
 			'dataProvider' => $dataProvider,
-			'itemOptions' => ['class' => 'item col-md-2'],
+			'itemOptions' => ['class' => 'item col-md-3'],
 			'itemView' => function ($model, $key, $index, $widget) {
-				if($model->coverImage){
-					$coverImage = Yii::$app->urlManager->baseUrl.'/uploads/'.$model->coverImage->file_name;
-				}else{
-					$coverImage = Media::getDummyImage();
-				}
 				return Html::a($this->render('_album_view', ['model' => $model]), Yii::$app->urlManager->createAbsoluteUrl(['album/view', 'slug' => $model->slug]), ['class' => 'users-list-name']);
 			},
 		]) ?>

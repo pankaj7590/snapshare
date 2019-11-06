@@ -5,9 +5,12 @@ namespace backend\controllers;
 use Yii;
 use common\models\Album;
 use common\models\Media;
+use common\models\User;
+use common\models\Shared;
 use common\models\AlbumSearch;
 use common\models\MediaSearch;
 use common\models\UserContactSearch;
+use common\models\SharedSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -39,6 +42,7 @@ class AlbumController extends Controller
     public function actionIndex()
     {
         $searchModel = new AlbumSearch();
+		$searchModel->created_by = Yii::$app->user->id;
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -115,7 +119,7 @@ class AlbumController extends Controller
 		$model = $this->findModel($slug);
 
         if (Yii::$app->request->post() && $model->upload()) {
-            return $this->redirect(['media', 'slug' => $model->slug]);
+            return $this->redirect(['view', 'slug' => $model->slug]);
         } else {
             return $this->render('upload', [
                 'model' => $model,
@@ -165,7 +169,7 @@ class AlbumController extends Controller
 				
 			}
 		}
-		return $this->redirect(['media', 'slug' => $album]);
+		return $this->redirect(['view', 'slug' => $album]);
 	}
 	
 	public function actionShare($slug){
@@ -175,12 +179,49 @@ class AlbumController extends Controller
 		$searchModel->user_id = Yii::$app->user->id;
 		$dataProvider = $searchModel->search([]);
 		
+		$searchModelShared = new SharedSearch();
+		$searchModelShared->album_id = $model->id;
+		$dataProviderShared = $searchModelShared->search([]);
+		
+		if($model->load(Yii::$app->request->post()) && $model->share()){
+			Yii::$app->session->setFlash('success', 'Please ask the invited user to check email and accept the invitation.');
+			return $this->redirect(['view', 'slug' => $model->slug]);
+		}
+		
 		return $this->render('share', [
 			'model' => $model,
 			'dataProvider' => $dataProvider,
 			'searchModel' => $searchModel,
+			'searchModelShared' => $searchModelShared,
+			'dataProviderShared' => $dataProviderShared,
 		]);
 	}
+
+    /**
+     * Deletes an existing Shared model.
+     * If deletion is successful, the browser will be redirected to the 'index' page.
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionRemoveShared($album, $with)
+    {
+        $model = $this->findModel($album);
+		$userModel = User::findOne(['username' => $with]);
+		if(!$userModel){
+			throw new NotFoundHttpException('User album shared with is not found.');
+		}
+		$modelShared = Shared::findOne(['shared_with' => $userModel->id, 'album_id' => $model->id]);
+		if(!$modelShared){
+			throw new NotFoundHttpException('Album is not shared with the user.');
+		}
+		if($modelShared->delete()){
+			Yii::$app->session->setFlash('success', 'User removed successfully.');
+		}else{
+			Yii::$app->session->setFlash('error', 'Something went wrong. Please try again.');
+		}
+
+        return $this->redirect(['share', 'slug' => $album]);
+    }
 
     /**
      * Finds the Album model based on its primary key value.

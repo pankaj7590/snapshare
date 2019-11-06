@@ -52,7 +52,9 @@ class Shared extends \yii\db\ActiveRecord
     {
         return [
             TimestampBehavior::className(),
-            BlameableBehavior::className(),
+			'blameable' => [
+				'class' => BlameableBehavior::className(),
+			],
         ];
     }
 

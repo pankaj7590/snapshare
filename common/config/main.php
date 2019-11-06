@@ -1,6 +1,7 @@
 <?php
 return [
 	'name' => 'SnapShare',
+	'timezone' => 'Asia/Kolkata',
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
         '@npm'   => '@vendor/npm-asset',

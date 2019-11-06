@@ -3,6 +3,7 @@
 namespace common\models;
 
 use Yii;
+use yii\behaviors\TimestampBehavior;
 
 /**
  * This is the model class for table "user_invitation".
@@ -21,6 +22,8 @@ use Yii;
  */
 class UserInvitation extends \yii\db\ActiveRecord
 {
+	public $temp_album_id;
+	
     /**
      * {@inheritdoc}
      */
@@ -35,12 +38,22 @@ class UserInvitation extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['user_id', 'email', 'created_at', 'updated_at'], 'required'],
+            [['user_id', 'email'], 'required'],
             [['user_id', 'is_accepted', 'status', 'created_at', 'updated_at'], 'integer'],
             [['email', 'invitation_token'], 'string', 'max' => 255],
             [['email'], 'unique'],
             [['invitation_token'], 'unique'],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function behaviors()
+    {
+        return [
+            TimestampBehavior::className(),
         ];
     }
 
@@ -75,5 +88,29 @@ class UserInvitation extends \yii\db\ActiveRecord
     public function getUser()
     {
         return $this->hasOne(User::className(), ['id' => 'user_id']);
+    }
+	
+	public function afterSave($insert, $changedAttributes){
+		parent::afterSave($insert, $changedAttributes);
+		
+		//save invitation every time as duplication is not possible because of the unique constraint present for user_invitation_id and album_id combination.
+		$invitation = new Invitation();
+		$invitation->user_invitation_id = $this->id;
+		$invitation->album_id = $this->temp_album_id;
+		$invitation->save();
+		
+		return;
+	}
+	
+    /**
+     * Finds user by invitation token
+     *
+     * @param string $token invitation token
+     * @return static|null
+     */
+    public static function findByToken($token) {
+        return static::findOne([
+            'invitation_token' => $token,
+        ]);
     }
 }

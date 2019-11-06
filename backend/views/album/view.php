@@ -13,13 +13,14 @@ $this->title = $model->name;
 $this->params['breadcrumbs'][] = ['label' => 'Albums', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="container-fluid">
 	<div class="row">
 		<div class="col-md-3">
 			<div class="album-view box box-primary">
 				<div class="box-header">
 					<?= Html::a('Update', ['update', 'slug' => $model->slug], ['class' => 'btn btn-primary btn-flat']) ?>
-					<?= Html::a('Upload Media', ['upload-files', 'slug' => $model->slug], ['class' => 'btn btn-success btn-flat']) ?>
+					<?= Html::a('<i class="fa fa-plus"></i>', ['upload-files', 'slug' => $model->slug], ['class' => 'btn btn-success btn-flat', 'title' => 'Upload media']) ?>
+					<?= Html::a('<i class="fa fa-share"></i>', ['share', 'slug' => $model->slug], ['class' => 'btn btn-warning btn-flat', 'title' => 'Share album']) ?>
+					<?= Html::a('<i class="fa fa-link"></i>', ['link-share', 'slug' => $model->slug], ['class' => 'btn btn-default btn-flat', 'title' => 'Share album']) ?>
 					<?= Html::a('Delete', ['delete', 'slug' => $model->slug], [
 						'class' => 'btn btn-danger btn-flat pull-right',
 						'data' => [
@@ -65,24 +66,23 @@ $this->params['breadcrumbs'][] = $this->title;
 			</div>
 		</div>
 		<div class="col-md-9">
-<div class="media-index box box-primary">
-    <div class="box-body table-responsive">
-		<div class="container-fluid">
-			<div class="row">
-				<?= ListView::widget([
-					'dataProvider' => $dataProvider,
-					'itemOptions' => ['class' => 'item col-md-2'],
-					'itemView' => function ($model, $key, $index, $widget) {
-						return Html::a($this->render('_file_view', ['model' => $model]), null, ['class' => 'users-list-name']);
-					},
-				]) ?>
+			<div class="media-index box box-primary">
+				<div class="box-body table-responsive">
+					<div class="container-fluid">
+						<div class="row">
+							<?= ListView::widget([
+								'dataProvider' => $dataProvider,
+								'itemOptions' => ['class' => 'item col-md-2'],
+								'itemView' => function ($model, $key, $index, $widget) {
+									return Html::a($this->render('_file_view', ['model' => $model]), null, ['class' => 'users-list-name']);
+								},
+							]) ?>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
-    </div>
-</div>
-</div>
-</div>
-</div>
+	</div>
 <?php
 $this->registerCss("
 .file-image-container{

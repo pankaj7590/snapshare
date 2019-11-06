@@ -19,6 +19,8 @@ $this->params['breadcrumbs'][] = $this->title;
 		<?php $form = ActiveForm::begin(); ?>
 		<div class="box-body table-responsive">
 
+			<?= $form->errorSummary($model)?>
+			
 			<?= $form->field($model, 'temp_emails[]')->widget(Select2::classname(), [
 				'data' => ArrayHelper::map($dataProvider->models, 'id', 'email'),
 				'options' => ['placeholder' => 'Select or enter new email ...', 'multiple' => true],
@@ -35,4 +37,12 @@ $this->params['breadcrumbs'][] = $this->title;
 		<?php ActiveForm::end(); ?>
 	</div>
 
+</div>
+<div>
+	<?= $this->render('_shared', [
+			'model' => $model,
+			'searchModel' => $searchModelShared,
+			'dataProvider' => $dataProviderShared,
+		]);
+	?>
 </div>

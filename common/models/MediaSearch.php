@@ -18,7 +18,7 @@ class MediaSearch extends Media
     public function rules()
     {
         return [
-            [['id', 'file_size', 'link_shared', 'status', 'created_by', 'updated_by', 'created_at', 'updated_at'], 'integer'],
+            [['id', 'album_id', 'file_size', 'link_shared', 'status', 'created_by', 'updated_by', 'created_at', 'updated_at'], 'integer'],
             [['file_name', 'file_type', 'alt', 'slug'], 'safe'],
         ];
     }
@@ -61,6 +61,7 @@ class MediaSearch extends Media
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
+            'album_id' => $this->album_id,
             'file_size' => $this->file_size,
             'link_shared' => $this->link_shared,
             'status' => $this->status,

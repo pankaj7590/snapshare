@@ -36,6 +36,7 @@ class SharedController extends Controller
     public function actionIndex()
     {
         $searchModel = new SharedSearch();
+		$searchModel->shared_with = Yii::$app->user->id;
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
