@@ -118,7 +118,7 @@ class AlbumController extends Controller
     {
 		$model = $this->findModel($slug);
 
-        if (Yii::$app->request->post() && $model->upload()) {
+        if ($model->load(Yii::$app->request->post()) && $model->upload()) {
             return $this->redirect(['view', 'slug' => $model->slug]);
         } else {
             return $this->render('upload', [

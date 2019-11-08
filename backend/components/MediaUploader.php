@@ -19,7 +19,7 @@ class MediaUploader extends Component
     {
         $mediaModel = new Media();
         $mediaModel->album_id = $album_id;
-        $mediaModel->alt = $upFile->name;
+        $mediaModel->alt = $upFile->baseName;
         $itemName = md5(uniqid(time(), true)) . '.' . $upFile->extension; // unique_name+extension
         $mediaModel->file_name = $itemName;
         $mediaModel->file_size = $upFile->size;

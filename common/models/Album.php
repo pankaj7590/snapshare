@@ -31,7 +31,7 @@ use common\components\GeneralHelper;
  */
 class Album extends \yii\db\ActiveRecord
 {
-	public $temp_files, $temp_emails;
+	public $temp_files, $temp_emails, $do_compress, $compress_quality;
 	
     const STATUS_DELETED = 0;
     const STATUS_INACTIVE = 9;
@@ -81,7 +81,8 @@ class Album extends \yii\db\ActiveRecord
             [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['updated_by' => 'id']],
             ['status', 'default', 'value' => self::STATUS_INACTIVE],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_INACTIVE, self::STATUS_DELETED]],
-			[['temp_files', 'temp_emails'], 'safe'],
+			[['temp_files', 'temp_emails', 'do_compress', 'compress_quality'], 'safe'],
+			[['compress_quality'], 'integer'],
         ];
     }
 
@@ -102,6 +103,8 @@ class Album extends \yii\db\ActiveRecord
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
             'temp_files' => 'Files',
+			'do_compress' => 'Compress files before uploading?',
+			'compress_quality' => 'Compress quality(in %)'
         ];
     }
 
@@ -142,6 +145,15 @@ class Album extends \yii\db\ActiveRecord
 		if($temp_files){
 			foreach($temp_files as $temp_file){
 				if ($temp_file != null && !$temp_file->getHasError()) {
+					//compress file if requested by user and it is an image
+					if ($this->do_compress && (($temp_file->type == "image/jpeg"))) {
+						// echo "<pre>";print_r($this);exit;
+						$url = $temp_file->tempName;
+						$quality = (isset($this->compress_quality)?$this->compress_quality:Yii::$app->params['default_compress_quality']);
+						//keeping both urls same so that, temporary file will be compressed and later moved to uploads folder
+						$this->compressImage($url, $url , $quality);
+						$temp_file->size = filesize($url);
+					}
 					$media_id = MediaUploader::MediaUpload($temp_file, $this->id);
 					if ($media_id === false) {
 						return false;
@@ -191,5 +203,42 @@ class Album extends \yii\db\ActiveRecord
 			}
 		}
 		return true;
+	}
+	
+	private function compressImage($source_url, $destination_url, $quality) {
+		$info = getimagesize($source_url);
+		try{
+			$image = imagecreatefromjpeg($source_url);
+			
+			//https://medium.com/thetiltblog/fixing-rotated-mobile-image-uploads-in-php-803bb96a852c : fix rotating image issue when uploading
+			if (function_exists('exif_read_data')) {
+				$exif = @exif_read_data($source_url);
+				if($exif && isset($exif['Orientation'])) {
+					$orientation = $exif['Orientation'];
+					if($orientation != 1){
+						$deg = 0;
+						switch ($orientation) {
+							case 3:
+								$deg = 180;
+								break;
+							case 6:
+								$deg = 270;
+								break;
+							case 8:
+								$deg = 90;
+								break;
+						}
+						if ($deg) {
+							$image = imagerotate($image, $deg, 0);        
+						}
+					}
+				}
+			}
+			imagejpeg($image, $destination_url, $quality);
+		}catch(Exception $e){
+			//if compression fails then return source file url
+			return $source_url;
+		}
+		return $destination_url;
 	}
 }

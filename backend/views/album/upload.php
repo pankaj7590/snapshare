@@ -21,6 +21,10 @@ $this->params['breadcrumbs'][] = $this->title;
 			<?= $form->field($model, 'temp_files[]')->widget(FileInput::classname(), [
 				'options' => ['multiple' => 'true'],
 			]);?>
+			
+			<?= $form->field($model, 'do_compress')->checkbox(['checked' => 'checked']);?>
+			
+			<?= $form->field($model, 'compress_quality')->textInput(['value' => Yii::$app->params['default_compress_quality']]);?>
 
 		</div>
 		<div class="box-footer">

@@ -6,4 +6,5 @@ return [
     'senderName' => 'SnapShare',
     'user.passwordResetTokenExpire' => 3600,
 	'dummyImage' => 'snapshare-dummy-image.png',
+	'default_compress_quality' => '70',
 ];
