@@ -7,9 +7,9 @@
                 'options' => ['class' => 'sidebar-menu tree', 'data-widget'=> 'tree'],
                 'items' => [
                     ['label' => 'Member since '.date('M. Y', Yii::$app->user->identity->created_at), 'options' => ['class' => 'header']],
-                    ['label' => 'Users', 'icon' => 'users', 'url' => ['user/index']],
-                    ['label' => 'My Albums', 'icon' => 'camera', 'url' => ['album/index']],
-                    ['label' => 'Shared With Me', 'icon' => 'camera', 'url' => ['shared/index']],
+                    ['label' => 'Users', 'icon' => 'users', 'url' => ['/user/index']],
+                    ['label' => 'My Albums', 'icon' => 'camera', 'url' => ['/album/index']],
+                    ['label' => 'Shared With Me', 'icon' => 'camera', 'url' => ['/shared/index']],
                     [
                         'label' => 'User Management',
                         'icon' => 'cogs',
@@ -20,8 +20,9 @@
                             ['label' => 'Roles', 'icon' => 'vcard', 'url' => ['/admin/role'],],
                         ],
                     ],
-                    ['label' => 'Change Password', 'icon' => 'asterisk', 'url' => ['site/change-password']],
-                    ['label' => 'Logout', 'icon' => 'sign-out', 'url' => ['site/logout'], 'template' => '<a href="{url}" data-method="post" data-confirm="Do you want to logout?">{icon} {label}</a>'],
+                    ['label' => 'Backups', 'icon' => 'download', 'url' => ['/site/backup']],
+                    ['label' => 'Change Password', 'icon' => 'asterisk', 'url' => ['/site/change-password']],
+                    ['label' => 'Logout', 'icon' => 'sign-out', 'url' => ['/site/logout'], 'template' => '<a href="{url}" data-method="post" data-confirm="Do you want to logout?">{icon} {label}</a>'],
                 ],
             ]
         ) ?>

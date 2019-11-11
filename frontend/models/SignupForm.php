@@ -5,6 +5,7 @@ use Yii;
 use yii\base\Model;
 use common\models\User;
 use common\models\UserInvitation;
+use common\models\UserContact;
 use common\models\Shared;
 use yii\base\InvalidArgumentException;
 
@@ -39,7 +40,7 @@ class SignupForm extends Model
             ['password', 'required'],
             ['password', 'string', 'min' => 6],
 
-            ['invitation_token', 'required'],
+            ['invitation_token', 'safe'],
             ['password', 'string', 'min' => 6],
         ];
     }
@@ -60,6 +61,7 @@ class SignupForm extends Model
 			if (!$userInvitation) {
 				throw new InvalidArgumentException('Wrong invitation token.');
 			}
+			$userInvitation->updateAttributes(['is_accepted' => true, 'updated_at' => time()]);
 		}
         
         $user = new User();
@@ -83,6 +85,13 @@ class SignupForm extends Model
 			$auth->assign($subscriberRole, $user->getId());
 			
 			if(isset($userInvitation)){
+				//add new user to user contact table
+				$userContact = new UserContact();
+				$userContact->user_id = $userInvitation->user_id;
+				$userContact->contact_id = $user->id;
+				$userContact->save();
+				
+				//add new user to shared table
 				$invitations = $userInvitation->invitations;
 				foreach($invitations as $invitation){
 					$shared = new Shared();

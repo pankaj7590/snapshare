@@ -224,6 +224,20 @@ class AlbumController extends Controller
     }
 
     /**
+     * Downloads a single Shared model.
+     * @param string $slug
+     * @return mixed
+     */
+    public function actionDownload($slug)
+    {
+		$model = $this->findModel($slug);
+		
+		$model->download();
+		
+		die();
+    }
+
+    /**
      * Finds the Album model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param varchar $slug

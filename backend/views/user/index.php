@@ -24,16 +24,23 @@ $this->params['breadcrumbs'][] = $this->title;
             'columns' => [
                 ['class' => 'yii\grid\SerialColumn'],
 
-                'id',
                 'username',
-                'auth_key',
-                'password_hash',
-                'password_reset_token',
-                // 'email:email',
+                'email:email',
                 // 'status',
-                // 'created_at',
+				[
+					'attribute' => 'created_at',
+					'format' => 'datetime',
+					'filter' => false,
+				],
+				[
+					'attribute' => 'created_by',
+					'label' => 'Invited By',
+					'filter' => false,
+					'value' => function($model){
+						return ($model->createdBy?$model->createdBy->username:null);
+					},
+				],
                 // 'updated_at',
-                // 'verification_token',
 
                 ['class' => 'yii\grid\ActionColumn'],
             ],

@@ -241,4 +241,38 @@ class Album extends \yii\db\ActiveRecord
 		}
 		return $destination_url;
 	}
+	
+	public function download(){
+		$mediaModels = $this->media;
+		
+		//http://www.bsourcecode.com/2013/04/yii-zip-format/
+		//built in php class ZipArchive;
+		$zip=new \ZipArchive();
+		$archieveName = ($this->slug)."_".time();
+		$destination = \yii\helpers\Url::to("@backend/web/archieves/".$archieveName.".zip");//Eg:lorem-sit_1573394349.zip
+		if($zip->open($destination,\ZIPARCHIVE::CREATE) !== true) {
+			// echo $destination;exit;
+			return false;
+		}
+		foreach($mediaModels as $mediaModel){
+			$filePath = \yii\helpers\Url::to("@backend/web/uploads/".$mediaModel->file_name);
+			// echo $filePath;exit;
+			$fileName = $mediaModel->file_name;
+			$zip->addFile($filePath, $fileName);
+		}
+		$zip->close();
+
+		if(file_exists($destination)) {
+			header('Content-Description: File Transfer');
+			header('Content-Type: application/octet-stream');
+			header('Content-Disposition: attachment; filename="'.basename($destination).'"');
+			header('Expires: 0');
+			header('Cache-Control: must-revalidate');
+			header('Pragma: public');
+			header('Content-Length: ' . filesize($destination));
+			flush(); // Flush system output buffer
+			readfile($destination);
+			exit;
+		}
+	}
 }

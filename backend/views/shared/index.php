@@ -14,14 +14,14 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="album-index box box-default">
     <?php Pjax::begin(); ?>
     <div class="box-header with-border">
-        <?= Html::a('Create Album', ['create'], ['class' => 'btn btn-success btn-flat']) ?>
+        <?= Html::a('Create Album', ['album/create'], ['class' => 'btn btn-success btn-flat']) ?>
     </div>
     <div class="box-body table-responsive">
 		<?= ListView::widget([
 			'dataProvider' => $dataProvider,
 			'itemOptions' => ['class' => 'item col-md-3'],
 			'itemView' => function ($model, $key, $index, $widget) {
-				return Html::a($this->render('_shared_album_view', ['model' => $model]), Yii::$app->urlManager->createAbsoluteUrl(['album/view', 'slug' => $model->album->slug]), ['class' => 'users-list-name']);
+				return Html::a($this->render('_shared_album_view', ['model' => $model]), Yii::$app->urlManager->createAbsoluteUrl(['shared/view', 'slug' => $model->album->slug]), ['class' => 'users-list-name']);
 			},
 		]) ?>
     </div>

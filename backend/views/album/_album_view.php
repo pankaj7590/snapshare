@@ -20,6 +20,7 @@ if($model->coverImage){
 		<?= Html::a('<i class="fa fa-plus"></i>', ['upload-files', 'slug' => $model->slug], ['class' => 'btn btn-success btn-flat', 'title' => 'Upload media']) ?>
 		<?= Html::a('<i class="fa fa-share"></i>', ['album/share', 'slug' => $model->slug], ['class' => 'btn btn-warning']);?>
 		<?= Html::a('<i class="fa fa-link"></i>', ['album/link-share', 'slug' => $model->slug], ['class' => 'btn btn-default']);?>
-		<?= Html::a('<i class="fa fa-trash"></i>', ['album/delete', 'slug' => $model->slug], ['class' => 'btn btn-danger', 'data' => ['method' => 'post', 'confirm' => 'Do you really want to delete it?']]);?>
+		<?= Html::a('<i class="fa fa-download"></i>', ['album/download', 'slug' => $model->slug], ['class' => 'btn btn-info']);?>
+		<?= Html::a('<i class="fa fa-trash"></i>', ['album/delete', 'slug' => $model->slug], ['class' => 'btn btn-danger pull-right', 'data' => ['method' => 'post', 'confirm' => 'Do you really want to delete it?']]);?>
 	</div>
 </div>

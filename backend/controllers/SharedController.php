@@ -3,8 +3,10 @@
 namespace backend\controllers;
 
 use Yii;
+use common\models\Album;
 use common\models\Shared;
 use common\models\SharedSearch;
+use common\models\MediaSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -47,13 +49,21 @@ class SharedController extends Controller
 
     /**
      * Displays a single Shared model.
-     * @param integer $id
+     * @param string $slug
      * @return mixed
      */
-    public function actionView($id)
+    public function actionView($slug)
     {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
+		$model = $this->findModel($slug);
+		
+        $searchModel = new MediaSearch();
+		$searchModel->album_id = $model->album_id;
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+		
+        return $this->render('view_shared', [
+            'model' => $model,
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
         ]);
     }
 
@@ -108,18 +118,31 @@ class SharedController extends Controller
     }
 
     /**
+     * Downloads a single Shared model.
+     * @param string $slug
+     * @return mixed
+     */
+    public function actionDownload($slug)
+    {
+		$model = $this->findModel($slug);
+		
+		$model->album->download();		
+    }
+
+    /**
      * Finds the Shared model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param integer $id
+     * @param string $slug
      * @return Shared the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id)
+    protected function findModel($slug)
     {
-        if (($model = Shared::findOne($id)) !== null) {
+		$albumModel = Album::findOne(['slug' => $slug]);
+        if ($albumModel && ($model = Shared::findOne(['shared_with' => Yii::$app->user->id, 'album_id' => $albumModel->id])) !== null) {
             return $model;
         } else {
-            throw new NotFoundHttpException('The requested page does not exist.');
+            throw new NotFoundHttpException('The requested album does not exist or is not shared with you.');
         }
     }
 }

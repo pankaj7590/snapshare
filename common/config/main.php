@@ -20,5 +20,15 @@ return [
 		'authManager' => [
             'class' => 'yii\rbac\DbManager'
         ],
+		'backup' => [
+			'class' => 'common\components\BackupComponent',
+			// The directory for storing backups files
+			'backupsFolder' => dirname(dirname(__DIR__)) . '/backend/web/backups', // <project-root>/backups
+			// Directories that will be added to backup
+			'directories' => [
+				'uploads' => '@backend/web/uploads',
+			],
+			'dbhost' => '35.202.63.29',
+		],
     ],
 ];

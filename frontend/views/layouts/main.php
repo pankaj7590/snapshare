@@ -22,6 +22,11 @@ AppAsset::register($this);
     <?php $this->registerCsrfMetaTags() ?>
     <title><?= Html::encode($this->title) ?></title>
     <?php $this->head() ?>
+	<style>
+		.navbar-brand {
+			padding: 0;
+		}
+	</style>
 </head>
 <body>
 <?php $this->beginBody() ?>
@@ -29,6 +34,7 @@ AppAsset::register($this);
 <div class="wrap">
     <?php
     NavBar::begin([
+        'brandImage' => Yii::$app->urlManager->baseUrl.'/images/snapshare-logo-h-small.png',
         'brandLabel' => Yii::$app->name,
         'brandUrl' => Yii::$app->homeUrl,
         'options' => [
@@ -72,7 +78,7 @@ AppAsset::register($this);
 
 <footer class="footer">
     <div class="container">
-        <p class="pull-left">&copy; <?= Html::encode(Yii::$app->name) ?> <?= date('Y') ?></p>
+        <p class="pull-left">&copy; <?= Html::encode(Yii::$app->name) ?> <?= date('Y') ?> Snapped with <i class="glyphicon glyphicon-heart text-danger"></i> by <a href="https://salokhe.in" target="blank">Pankaj Salokhe</a></p>
 
         <p class="pull-right"><?= Yii::powered() ?></p>
     </div>

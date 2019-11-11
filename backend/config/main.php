@@ -47,6 +47,8 @@ return [
 				'<slug:[a-zA-Z0-9_ -]+>/media/<action>' => 'media/<action>',
 				'<slug:[a-zA-Z0-9_ -]+>/album/<action>' => 'album/<action>',
 				'<album:[a-zA-Z0-9_ -]+>/album/<action>/<with:[a-zA-Z0-9_ -]+>' => 'album/<action>',
+				'shared/<action>/<slug:[a-zA-Z0-9_ -]+>' => 'shared/<action>',
+				'<action>' => 'site/<action>',
             ],
         ],
         'urlManagerFrontend' => [

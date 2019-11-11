@@ -10,7 +10,7 @@ use yii\web\View;
 /* @var $this yii\web\View */
 /* @var $model common\models\Album */
 
-$this->title = $model->name;
+$this->title = $model->album->name;
 $this->params['breadcrumbs'][] = ['label' => 'Albums', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
@@ -18,52 +18,56 @@ $this->params['breadcrumbs'][] = $this->title;
 		<div class="col-md-3">
 			<div class="album-view box box-primary">
 				<div class="box-header">
-					<?= Html::a('Update', ['update', 'slug' => $model->slug], ['class' => 'btn btn-primary btn-flat']) ?>
-					<?= Html::a('<i class="fa fa-plus"></i>', ['upload-files', 'slug' => $model->slug], ['class' => 'btn btn-success btn-flat', 'title' => 'Upload media']) ?>
-					<?= Html::a('<i class="fa fa-share"></i>', ['share', 'slug' => $model->slug], ['class' => 'btn btn-warning btn-flat', 'title' => 'Share album']) ?>
-					<?= Html::a('<i class="fa fa-link"></i>', ['link-share', 'slug' => $model->slug], ['class' => 'btn btn-default btn-flat', 'title' => 'Share album']) ?>
-					<?= Html::a('<i class="fa fa-download"></i>', ['download', 'slug' => $model->slug], ['class' => 'btn btn-info btn-flat', 'title' => 'Download album']) ?>
+					<?= Html::a('<i class="fa fa-download"></i>', ['download', 'slug' => $model->album->slug], ['class' => 'btn btn-info btn-flat', 'title' => 'Download album']) ?>
 				</div>
 				<div class="box-body table-responsive no-padding">
 					<?= DetailView::widget([
 						'model' => $model,
 						'attributes' => [
-							'name',
+							[
+								'attribute' => 'name',
+								'value' => function($model){
+									return $model->album->name;
+								},
+							],
 							[
 								'attribute' => 'is_link_shared',
 								'value' => function($model){
-									return ($model->is_link_shared?'Yes':'No');
+									return ($model->album->is_link_shared?'Yes':'No');
 								},
 							],
 							[
 								'attribute' => 'status',
 								'value' => function($model){
-									return Album::$statuses[$model->status];
+									return Album::$statuses[$model->album->status];
 								},
 							],
 							[
 								'attribute' => 'created_by',
 								'value' => function($model){
-									return $model->createdBy->username;
+									return $model->album->createdBy->username;
 								},
 							],
 							[
 								'attribute' => 'updated_by',
 								'value' => function($model){
-									return $model->updatedBy->username;
+									return $model->album->updatedBy->username;
 								},
 							],
-							'created_at:datetime',
-							'updated_at:datetime',
-						],
-					]) ?>
-				</div>
-				<div class="box-footer">
-					<?= Html::a('Delete', ['delete', 'slug' => $model->slug], [
-						'class' => 'btn btn-danger btn-flat',
-						'data' => [
-							'confirm' => 'Are you sure you want to delete this item?',
-							'method' => 'post',
+							[
+								'attribute' => 'created_at',
+								'format' => 'datetime',
+								'value' => function($model){
+									return $model->album->created_at;
+								},
+							],
+							[
+								'attribute' => 'updated_at',
+								'format' => 'datetime',
+								'value' => function($model){
+									return $model->album->updated_at;
+								},
+							],
 						],
 					]) ?>
 				</div>
@@ -90,7 +94,7 @@ $this->params['breadcrumbs'][] = $this->title;
 									];
 								},
 								'itemView' => function ($model, $key, $index, $widget) {
-									return $this->render('_file_view', ['model' => $model]);
+									return $this->render('_file_view_shared', ['model' => $model]);
 								},
 							]) ?>
 						</div>

@@ -12,7 +12,6 @@ $this->title = 'Albums';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="album-index box box-default">
-    <?php Pjax::begin(); ?>
     <div class="box-header with-border">
         <?= Html::a('Create Album', ['create'], ['class' => 'btn btn-success btn-flat']) ?>
     </div>
@@ -25,7 +24,6 @@ $this->params['breadcrumbs'][] = $this->title;
 			},
 		]) ?>
     </div>
-    <?php Pjax::end(); ?>
 </div>
 <?php
 $this->registerCss("

@@ -102,7 +102,7 @@ class Invitation extends \yii\db\ActiveRecord
 			$email = $this->userInvitation->email;
 			$senderEmail = $this->userInvitation->user->email;
 			$senderName = $this->userInvitation->user->username;
-			$subject = "Album Shared on SnapShare";
+			$subject = "Album Shared on ".Yii::$app->name;
 			Yii::$app->mailer
 				->compose(
 					['html' => 'invitationEmail-html', 'text' => 'invitationEmail-text'],
