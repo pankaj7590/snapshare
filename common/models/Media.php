@@ -137,7 +137,7 @@ class Media extends \yii\db\ActiveRecord
         return $this->hasMany(Shared::className(), ['media_id' => 'id']);
     }
 	
-	public function getDummyImage(){
+	public static function getDummyImage(){
 		return Yii::$app->urlManager->baseUrl.'/images/'.Yii::$app->params['dummyImage'];
 	}
 	
