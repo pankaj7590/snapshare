@@ -7,6 +7,8 @@ use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use common\models\LoginForm;
 use backend\models\ChangePasswordForm;
+use backend\models\ChangeProfilePicForm;
+use common\models\User;
 
 /**
  * Site controller
@@ -27,7 +29,7 @@ class SiteController extends Controller
                         'allow' => true,
                     ],
                     [
-                        'actions' => ['logout', 'index', 'backup', 'delete-backup', 'change-password'],
+                        'actions' => ['logout', 'index', 'backup', 'delete-backup', 'change-password', 'change-profile-pic', 'remove-profile-pic'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -38,6 +40,7 @@ class SiteController extends Controller
                 'actions' => [
                     'logout' => ['post'],
                     'delete-backup' => ['post'],
+                    'remove-profile-pic' => ['post'],
                 ],
             ],
         ];
@@ -62,7 +65,10 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+		$users = User::find()->limit(30)->all();
+        return $this->render('index', [
+			'users' => $users,
+		]);
     }
 
     /**
@@ -142,4 +148,22 @@ class SiteController extends Controller
 			'model'=>$model,
 		]);
     }
+	
+	public function actionChangeProfilePic(){
+		$model = new ChangeProfilePicForm();
+		if($model->load(Yii::$app->request->post()) && $model->change()){
+			return $this->redirect(['change-profile-pic']);
+		}
+		return $this->render('change-profile-pic', [
+			'model' => $model,
+		]);
+	}
+	
+	public function actionRemoveProfilePic(){
+		$model = Yii::$app->user->identity;
+		if($model->removeProfilePic()){
+			Yii::$app->session->setFlash('success', 'Profile pic removed.');
+		}
+		return $this->redirect(['change-profile-pic']);
+	}
 }

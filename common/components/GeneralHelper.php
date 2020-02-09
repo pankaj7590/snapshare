@@ -9,7 +9,11 @@ class GeneralHelper{
 		$base = log($size) / log(1024);
 		$suffix = array("bytes", "KB", "MB", "GB", "TB");
 		$f_base = floor($base);
-		return round(pow(1024, $base - floor($base)), 1) . $suffix[$f_base];
+		if($size){
+			return round(pow(1024, $base - floor($base)), 1) . $suffix[$f_base];
+		}else{
+			return 0 . $suffix[$f_base];
+		}
 	}
 }
 ?>

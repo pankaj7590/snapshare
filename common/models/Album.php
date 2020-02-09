@@ -151,10 +151,10 @@ class Album extends \yii\db\ActiveRecord
 						$url = $temp_file->tempName;
 						$quality = (isset($this->compress_quality)?$this->compress_quality:Yii::$app->params['default_compress_quality']);
 						//keeping both urls same so that, temporary file will be compressed and later moved to uploads folder
-						$this->compressImage($url, $url , $quality);
+						MediaUploader::compressImage($url, $url , $quality);
 						$temp_file->size = filesize($url);
 					}
-					$media_id = MediaUploader::MediaUpload($temp_file, $this->id);
+					$media_id = MediaUploader::MediaUpload($temp_file, $this->id, $this->do_compress);
 					if ($media_id === false) {
 						return false;
 					}
@@ -168,12 +168,16 @@ class Album extends \yii\db\ActiveRecord
 		return $this->hasMany(Media::className(), ['album_id' => 'id']);
 	}
 	
-	public function getAlbumSize(){
+	public function getAlbumSize($raw=false){
 		$size = 0;
 		foreach($this->media as $file){
 			$size += $file->file_size;
 		}
-		return GeneralHelper::formatSize($size);
+		if($raw){
+			return $size;
+		}else{
+			return GeneralHelper::formatSize($size);
+		}
 	}
 	
 	public function share(){
@@ -203,43 +207,6 @@ class Album extends \yii\db\ActiveRecord
 			}
 		}
 		return true;
-	}
-	
-	private function compressImage($source_url, $destination_url, $quality) {
-		$info = getimagesize($source_url);
-		try{
-			$image = imagecreatefromjpeg($source_url);
-			
-			//https://medium.com/thetiltblog/fixing-rotated-mobile-image-uploads-in-php-803bb96a852c : fix rotating image issue when uploading
-			if (function_exists('exif_read_data')) {
-				$exif = @exif_read_data($source_url);
-				if($exif && isset($exif['Orientation'])) {
-					$orientation = $exif['Orientation'];
-					if($orientation != 1){
-						$deg = 0;
-						switch ($orientation) {
-							case 3:
-								$deg = 180;
-								break;
-							case 6:
-								$deg = 270;
-								break;
-							case 8:
-								$deg = 90;
-								break;
-						}
-						if ($deg) {
-							$image = imagerotate($image, $deg, 0);        
-						}
-					}
-				}
-			}
-			imagejpeg($image, $destination_url, $quality);
-		}catch(Exception $e){
-			//if compression fails then return source file url
-			return $source_url;
-		}
-		return $destination_url;
 	}
 	
 	public function download(){

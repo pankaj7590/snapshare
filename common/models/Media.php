@@ -8,6 +8,7 @@ use yii\behaviors\SluggableBehavior;
 use yii\behaviors\BlameableBehavior;
 use common\models\enums\MediaTypes;
 use common\components\GeneralHelper;
+use common\models\enums\DirectoryTypes;
 
 /**
  * This is the model class for table "media".
@@ -20,6 +21,7 @@ use common\components\GeneralHelper;
  * @property string $alt
  * @property string $slug
  * @property int $link_shared
+ * @property int $is_compressed
  * @property int $status
  * @property int $created_by
  * @property int $updated_by
@@ -73,7 +75,7 @@ class Media extends \yii\db\ActiveRecord
     {
         return [
             [['file_name', 'file_type', 'file_size', 'alt', 'slug'], 'required'],
-            [['file_size', 'link_shared', 'status', 'created_by', 'updated_by', 'created_at', 'updated_at'], 'integer'],
+            [['file_size', 'link_shared', 'status', 'created_by', 'updated_by', 'created_at', 'updated_at', 'is_compressed'], 'integer'],
             [['file_name', 'file_type', 'alt', 'slug'], 'string', 'max' => 255],
             [['album_id'], 'exist', 'skipOnError' => true, 'targetClass' => Album::className(), 'targetAttribute' => ['album_id' => 'id']],
             [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['created_by' => 'id']],
@@ -97,6 +99,7 @@ class Media extends \yii\db\ActiveRecord
             'alt' => 'Alt',
             'slug' => 'Slug',
             'link_shared' => 'Link Shared',
+            'is_compressed' => 'Is Compressed?',
             'status' => 'Status',
             'created_by' => 'Created By',
             'updated_by' => 'Updated By',
@@ -151,5 +154,12 @@ class Media extends \yii\db\ActiveRecord
 	
 	public function getFileSize(){
 		return GeneralHelper::formatSize($this->file_size);
+	}
+	
+	public function afterDelete(){
+		parent::afterDelete();
+		
+		//delete actual file
+		\yii\helpers\FileHelper::unlink(DirectoryTypes::getUploadsDirectory(false) . $this->file_name);
 	}
 }

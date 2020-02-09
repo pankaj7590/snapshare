@@ -8,11 +8,14 @@ use yii\behaviors\SluggableBehavior;
 use yii\behaviors\BlameableBehavior;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
+use common\models\enums\UserRoles;
+use common\components\GeneralHelper;
 
 /**
  * User model
  *
  * @property int $id
+ * @property int $profile_pic_id
  * @property string $username
  * @property string $slug
  * @property string $auth_key
@@ -90,7 +93,7 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return [
 			[['username', 'auth_key', 'password_hash', 'email'], 'required'],
-            [['is_admin_approved', 'status', 'created_by', 'updated_by', 'created_at', 'updated_at'], 'integer'],
+            [['is_admin_approved', 'status', 'created_by', 'updated_by', 'created_at', 'updated_at', 'profile_pic_id'], 'integer'],
             [['username', 'slug', 'password_hash', 'password_reset_token', 'email', 'verification_token'], 'string', 'max' => 255],
             [['auth_key'], 'string', 'max' => 32],
             [['username'], 'unique'],
@@ -98,6 +101,7 @@ class User extends ActiveRecord implements IdentityInterface
             [['password_reset_token'], 'unique'],
             [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['created_by' => 'id']],
             [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['updated_by' => 'id']],
+            [['profile_pic_id'], 'exist', 'skipOnError' => true, 'targetClass' => Media::className(), 'targetAttribute' => ['profile_pic_id' => 'id']],
             ['status', 'default', 'value' => self::STATUS_INACTIVE],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_INACTIVE, self::STATUS_DELETED]],
         ];
@@ -107,6 +111,7 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return [
             'id' => 'ID',
+            'profile_pic_id' => 'Profile Pic',
             'username' => 'Username',
             'slug' => 'Slug',
             'auth_key' => 'Auth Key',
@@ -359,4 +364,36 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return $this->hasMany(User::className(), ['updated_by' => 'id']);
     }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getProfilePic()
+    {
+        return $this->hasOne(Media::className(), ['id' => 'profile_pic_id']);
+    }
+	
+	public function removeProfilePic(){
+		$profilePic = $this->profilePic;
+		if($profilePic->delete()){
+			return true;
+		}
+		return false;
+	}
+	
+	public function getUsedQuota($raw=false){
+		$userQuota = 0;
+		foreach($this->albums as $album){
+			$userQuota += $album->getAlbumSize(true);
+		}
+		if($raw){
+			return $userQuota;
+		}else{
+			return GeneralHelper::formatSize($userQuota);
+		}
+	}
+	
+	public function isSuperAdmin(){
+		return array_key_exists(UserRoles::$roles[UserRoles::SUPER_ADMIN], \Yii::$app->authManager->getRolesByUser($this->id));
+	}
 }
